@@ -161,7 +161,7 @@ theorem succ_mul : a.succ * b = a * b + b := by
   induction b with
   | zero =>
     rw [zero_def]
-    repeat rw [mul_zero]
+    rw [mul_zero, mul_zero]
     rfl
   | succ b hb =>
     repeat rw [mul_succ]
@@ -172,33 +172,84 @@ theorem succ_mul : a.succ * b = a * b + b := by
     rw [add_comm a]
 
 theorem zero_mul : 0 * a = 0 := by
-  sorry
+  induction a with
+  | zero =>
+    rw [zero_def, mul_zero]
+  | succ a ha =>
+    rw [mul_succ]
+    rw [ha]
+    rfl
 
 theorem left_distrib : a * (b + c) = a * b + a * c := by
-  sorry
+  induction c with
+  | zero =>
+    rw [zero_def, add_zero, mul_zero]
+    rw [add_zero]
+  | succ c hc =>
+    rw [add_succ, mul_succ, mul_succ]
+    rw [hc]
+    rw [add_assoc]
+
 
 theorem mul_one : a * 1 = a := by
-  sorry
+  induction a with
+  | zero =>
+    rw [zero_def, zero_mul]
+  | succ a ha =>
+    rw [succ_mul, ha]
+    rw [succ_eq_add_one]
 
 theorem mul_comm : a * b = b * a := by
-  sorry
+  induction a with
+  | zero =>
+    rw [zero_def, zero_mul, mul_zero]
+  | succ a ha =>
+    rw [succ_mul, mul_succ]
+    rw [ha]
+
 
 theorem right_distrib : (a + b) * c = a * c + b * c := by
-  sorry
+  rw [mul_comm (a + b), left_distrib]
+  rw [mul_comm c, mul_comm c]
+
 
 theorem one_mul : 1 * a = a := by
-  sorry
+  rw [mul_comm, mul_one]
 
 theorem mul_assoc : a * b * c = a * (b * c) := by
-  sorry
+  induction c with
+  | zero =>
+    rw [zero_def]
+    repeat rw[mul_zero]
+  | succ c hc =>
+    repeat rw [mul_succ]
+    rw [left_distrib, hc]
 
 variable {a b c} in
 /-- In this one you may find useful to use `succ.inj`, the `succ` function is injective. -/
 theorem add_left_cancel (h : a + b = a + c) : b = c := by
-  sorry
+  induction a with
+  | zero =>
+    rw [zero_def] at h
+    repeat rw [zero_add] at h
+    exact h
+  | succ a ha =>
+    repeat rw [succ_add] at h
+    rw [ha]
+    apply succ.inj
+    exact h
 
-theorem mul_ne_zero : ∀ {a b : MyNat}, a ≠ 0 → b ≠ 0 → a * b ≠ 0 := by
-  sorry
+theorem mul_ne_zero : ∀ {a b : MyNat}, a ≠ 0 → b ≠ 0 → a * b ≠ 0
+  | 0, b => by
+    simp
+  | a, 0 => by
+    simp
+  | a + 1, b + 1 => by
+    intro h1 h2
+    rw [left_distrib, right_distrib, right_distrib,
+        one_mul, mul_one, mul_one]
+    rw [← succ_eq_add_one, add_succ]
+    apply succ_ne_zero
 
 /-- The predecessor function, with `pred 0 = 0`. -/
 def pred : MyNat → MyNat
@@ -207,23 +258,30 @@ def pred : MyNat → MyNat
 
 @[simp]
 theorem pred_zero : pred 0 = 0 := by
-  sorry
+  rfl
 
 theorem pred_succ : pred (succ a) = a := by
   rfl
 
 @[simp]
 theorem add_one_pred : pred (a + 1) = a := by
-  sorry
+  rw [← succ_eq_add_one]
+  rw [pred_succ]
 
 variable {a} in
 theorem succ_pred (ha : a ≠ 0) : succ (pred a) = a := by
-  sorry
+  cases a with
+  | zero =>
+    contradiction
+  | succ d =>
+    rw [pred_succ]
 
 variable {a} in
 @[simp]
 theorem pred_add_one (ha : a ≠ 0) : (pred a) + 1 = a := by
-  sorry
+  rw [← succ_eq_add_one]
+  rw [succ_pred]
+  exact ha
 
 /-- The order relation on `MyNat`. -/
 def le : Prop := ∃ x, b = a + x
@@ -241,10 +299,14 @@ theorem zero_le : 0 ≤ a := by
   rw [zero_add]
 
 theorem le_succ : a ≤ a.succ := by
-  sorry
+  rw [le_iff]
+  use 1
+  rw [succ_eq_add_one]
 
 theorem le_refl : a ≤ a := by
-  sorry
+  rw [le_iff]
+  use 0
+  rfl
 
 variable {a b c} in
 theorem le_trans (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
