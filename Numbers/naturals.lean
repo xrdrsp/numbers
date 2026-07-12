@@ -45,21 +45,28 @@ def one : MyNat := succ 0
 instance : One MyNat := ⟨one⟩
 
 theorem one_def : one = 1 := by
-  sorry
+  rfl
 
 theorem one_eq_succ_zero : 1 = succ 0 := by
-  sorry
+  rfl
 
 /-- This is basically an axiom added by Lean when defining natural numbers (feel free to ask more
 details if you want!) -/
 theorem succ_ne_zero : succ a ≠ 0 := by
-  sorry
+  intro h
+  contradiction
 
 theorem one_ne_zero : (1 : MyNat) ≠ 0 := by
-  sorry
+  intro h
+  rw [one_eq_succ_zero] at h
+  apply succ_ne_zero at h
+  exact h
 
 theorem zero_ne_one : (0 : MyNat) ≠ 1 := by
-  sorry
+  intro h
+  symm at h
+  apply one_ne_zero at h
+  exact h
 
 /-- Addition on `MyNat`. -/
 def add : MyNat → MyNat → MyNat
@@ -70,34 +77,70 @@ instance : Add MyNat where
   add := add
 
 theorem add_zero : a + 0 = a := by
-  sorry
+  rfl
 
 theorem add_succ : a + succ b = succ (a + b):= by
-  sorry
+  rfl
 
 @[grind =] --Ignore all tags like this one, same for `@[simp]`
 theorem succ_eq_add_one : succ a = a + 1 := by
-  sorry
+  rw [one_eq_succ_zero]
+  rw [add_succ]
+  rw [add_zero]
 
 @[simp]
 theorem add_one_ne_zero : a + 1 ≠ 0 := by
-  sorry
+  intro h
+  rw [← succ_eq_add_one] at h
+  apply succ_ne_zero at h
+  exact h
 
 theorem zero_add : 0 + a = a := by
-  sorry
+  induction a with
+  | zero =>
+    rfl
+  | succ a ha =>
+    rw [add_succ]
+    rw [ha]
 
 theorem succ_add : (succ a) + b = succ (a + b) := by
-  sorry
+  induction b with
+  | zero =>
+    rfl
+  | succ b hb =>
+    rw [add_succ]
+    rw [hb]
+    rw [add_succ]
+
 
 theorem add_assoc : a + b + c = a + (b + c) := by
-  sorry
+  induction c with
+  | zero =>
+    rfl
+  | succ c hc =>
+    repeat rw [add_succ]
+    rw [hc]
 
 theorem add_comm : a + b = b + a := by
-  sorry
+  induction a with
+  | zero =>
+    rw [zero_def]
+    rw [zero_add]
+    rfl
+  | succ a ha =>
+    rw [succ_add, add_succ]
+    rw [ha]
 
 variable {a b} in
 theorem eq_zero_of_add_eq_zero (h : a + b = 0) : a = 0 := by
-  sorry
+  induction b with
+  | zero =>
+    rw [zero_def, add_zero] at h
+    exact h
+  | succ b hb =>
+    rw [add_succ] at h
+    have h_contr := succ_ne_zero (a + b)
+    contradiction
 
 /-- Multiplication on `MyNat`. -/
 def mul : MyNat → MyNat → MyNat
@@ -108,14 +151,25 @@ instance : Mul MyNat where
   mul := mul
 
 theorem mul_zero : a * 0 = 0 := by
-  sorry
+  rfl
 
 theorem mul_succ : a * b.succ = a * b + a := by
-  sorry
+  rfl
 
 @[grind =]
 theorem succ_mul : a.succ * b = a * b + b := by
-  sorry
+  induction b with
+  | zero =>
+    rw [zero_def]
+    repeat rw [mul_zero]
+    rfl
+  | succ b hb =>
+    repeat rw [mul_succ]
+    rw [hb]
+    repeat rw [add_assoc]
+    rw [add_succ]
+    rw [add_succ a]
+    rw [add_comm a]
 
 theorem zero_mul : 0 * a = 0 := by
   sorry
