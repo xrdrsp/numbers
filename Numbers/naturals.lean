@@ -306,15 +306,35 @@ theorem le_succ : a ≤ a.succ := by
 theorem le_refl : a ≤ a := by
   rw [le_iff]
   use 0
-  rfl
+  rw [add_zero]
 
 variable {a b c} in
 theorem le_trans (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
-  sorry
+  rw [le_iff] at *
+  obtain ⟨x1, hx1⟩ := hab
+  obtain ⟨x2, hx2⟩ := hbc
+  use x1 + x2
+  rw [← add_assoc, ← hx1]
+  exact hx2
 
 variable {a b} in
 theorem le_antisymm (hab : a ≤ b) (hba : b ≤ a) : a = b := by
-  sorry
+  rw [le_iff] at *
+  obtain ⟨x, hx⟩ := hab
+  obtain ⟨y, hy⟩ := hba
+  rw [hx] at hy
+  nth_rw 1 [← add_zero a] at hy
+  rw [add_assoc] at hy
+  apply add_left_cancel at hy
+  cases x with
+  | zero =>
+    rw [zero_def] at hx
+    rw [add_zero] at hx
+    symm at hx
+    exact hx
+  | succ d =>
+    rw [succ_add] at hy
+    contradiction
 
 theorem le_total : a ≤ b ∨ b ≤ a := by
   sorry
