@@ -30,7 +30,9 @@ def IsNonneg (x : MyRat) : Prop :=
 
 @[simp]
 lemma zero_nonneg : IsNonneg 0 := by
-  sorry
+  use 0, 1
+  simp [zero_def]
+
 
 @[simp]
 lemma one_nonneg : IsNonneg 1 := by

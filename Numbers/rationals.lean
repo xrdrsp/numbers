@@ -100,13 +100,13 @@ instance R_equiv : Setoid MyPrerat where
 @[simp, grind =]
 lemma equiv_def (a : MyInt) (b : {x : MyInt // x ≠ 0}) (c : MyInt) (d : {x : MyInt // x ≠ 0}) :
     (a, b) ≈ (c, d) ↔ a * d = b * c := by
-  sorry
+  rfl
 
 -- Teach the definition of `Setoid.r` to the simplifier
 @[simp, grind =]
 lemma equiv_def' (a : MyInt) (b : {x : MyInt // x ≠ 0}) (c : MyInt) (d : {x : MyInt // x ≠ 0}) :
     Setoid.r (a, b) (c, d) ↔ a * d = b * c := by
-  sorry
+  rfl
 
 /-!
 
@@ -347,7 +347,6 @@ It will work if there are between 1 and 3 variables, and it
 uses the universal property of quotients to reduce the equality
 to an equality of polynomials with coefficients in the *integers*,
 and then attempts to use the `ring` tactic to solve it. -/
-
 -- note that we have to go through all this: we can't use `ring`
 -- on MyRat directly yet and we're using this tool to prove
 -- that it's a commutative ring, after which we will be able to use `ring`.
@@ -392,10 +391,8 @@ lemma sub_def (a : MyInt) (b : {x : MyInt // x ≠ 0}) (c : MyInt) (d : {x : MyI
 
 lemma zero_ne_one : (0 : MyRat) ≠ 1 := by
   by_contra! h
-  rw [zero_def] at h
+  rw [zero_def, one_def] at h
   simp [Quotient.eq] at h
-  sorry
-
 
 lemma mul_inv_cancel (x : MyRat) (hx : x ≠ 0) : x * x⁻¹ = 1 := by
   rcases x with ⟨a, b, hb⟩
@@ -409,12 +406,13 @@ lemma mul_inv_cancel (x : MyRat) (hx : x ≠ 0) : x * x⁻¹ = 1 := by
   simp [one_def, inv_def, ha, mul_def, Quotient.eq] at *
   grind
 
-
 noncomputable
 instance field : Field MyRat where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   mul_inv_cancel := mul_inv_cancel
-  inv_zero := by sorry
+  inv_zero := by
+    apply Quot.sound
+    simp [MyPrerat.inv]
   qsmul := _ --ignore
   nnqsmul := _ --ignore
 
