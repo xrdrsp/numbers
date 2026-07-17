@@ -195,7 +195,7 @@ noncomputable instance : IsStrictOrderedRing MyRat :=
 lemma archimedean (x : MyRat) : ∃ (n : MyNat), x ≤ i n := by
   rcases le_total 0 x with h | h
   swap
-  . use 0
+  · use 0
     rw [i_zero]
     exact h
   revert h
