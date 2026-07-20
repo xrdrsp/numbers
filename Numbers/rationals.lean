@@ -84,12 +84,19 @@ lemma R_symm : ∀ {x y}, R x y → R y x := by
   grind
 
 lemma R_trans : ∀ {x y z}, R x y → R y z → R x z := by
-  -- intro x y z h1 h2
-  intro ⟨a, b, hb⟩ ⟨c, d, hd⟩ ⟨e, f, hf⟩ h1 h2
+  intro x y z h1 h2
+  rcases x with ⟨a, b, hb⟩
+  rcases y with ⟨c, d, hd⟩
+  rcases z with ⟨e, f, hf⟩
   rw [R_def] at *
   simp only at *
-  apply MyInt.eq_of_mul_eq_mul_right hd
-  grind
+  have h : a * d * f = b * c * f := by grind
+  rw [mul_assoc b, h2, mul_assoc a, mul_comm d, mul_comm d,
+      ← mul_assoc a, ← mul_assoc b] at h
+  simp only [mul_eq_mul_right_iff] at h
+  obtain h1 | h2 := h
+  · exact h1
+  · contradiction
 
 /-- Enable `≈` notation for `R` and ability to quotient by it. -/
 instance R_equiv : Setoid MyPrerat where

@@ -415,9 +415,10 @@ instance commRing : CommRing MyInt where
   zsmul := zsmulRec --ignore this
 
 lemma zero_ne_one : (0 : MyInt) ≠ 1 := by
-  rw [zero_def, one_def]
-  by_contra! h
-  simp [Quotient.eq] at h
+  rw [zero_def, one_def, ne_eq]
+  rw [Quotient.eq, equiv_def']
+  grind
+
 
 lemma mul_ne_zero (x y : MyInt) : x ≠ 0 → y ≠ 0 → x * y ≠ 0 := by
   refine Quot.induction_on₂ x y ?_
@@ -500,16 +501,44 @@ lemma le_refl (x : MyInt) : x ≤ x := by
   simp
 
 lemma le_trans (x y z : MyInt) (h1 : x ≤ y) (h2 : y ≤ z) : x ≤ z := by
-  obtain ⟨x1, hx1⟩ := h1
-  obtain ⟨x2, hx2⟩ := h2
-  use x1 + x2
-  grind
+  rcases h1 with ⟨a, ha⟩
+  rcases h2 with ⟨b, hb⟩
+  use a + b
+  simp only [i] at *
+  rw [hb, ha, add_assoc]
+  rw [add_def]
+  simp
 
 lemma le_antisymm (x y : MyInt) (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
-  sorry
+  rcases hxy with ⟨a, ha⟩
+  rcases hyx with ⟨b, hb⟩
+  rw [ha, add_assoc, left_eq_add, ← i_add, ← i_zero] at hb
+  apply i_injective at hb
+  cases a with
+  | zero =>
+    rw [MyNat.zero_def] at ha
+    simp only [i_zero, add_zero] at ha
+    symm at ha
+    exact ha
+  | succ a' =>
+    rw [MyNat.succ_add] at hb
+    contradiction
 
 lemma le_total (x y : MyInt) : x ≤ y ∨ y ≤ x := by
-  sorry
+  rcases x with ⟨a, b⟩
+  rcases y with ⟨c, d⟩
+  simp only [Quot_eq_Quotient]
+  rcases MyNat.le_total (a + d) (b + c) with h | h
+  · left
+    rcases h with ⟨e, he⟩
+    use e
+    rw [i, add_def, Quotient.eq, equiv_def']
+    grind
+  · right
+    rcases h with ⟨e, he⟩
+    use e
+    rw [i, add_def, Quotient.eq, equiv_def']
+    grind
 
 noncomputable instance linearOrder : LinearOrder MyInt where
   le := (· ≤ ·)
@@ -525,7 +554,20 @@ lemma zero_le_one : (0 : MyInt) ≤ 1 := by
 
 /-- The natural map from the naturals to the integers preserves and reflects `≤`. -/
 lemma i_le_iff (a b : MyNat) : i a ≤ i b ↔ a ≤ b := by
-  sorry
+  constructor
+  · intro ⟨c, hc⟩
+    rw [i, i, i, add_def] at hc
+    simp at hc
+    rw [Quotient.eq, equiv_def'] at hc
+    use c
+    grind
+  · intro ⟨c, hc⟩
+    use c
+    rw [i, i, i, add_def, hc]
+    simp
+
+
+
 
 /-!
 
