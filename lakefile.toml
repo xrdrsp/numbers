@@ -1,6 +1,4 @@
 name = "numbers"
-version = "0.1.0"
-keywords = ["math"]
 defaultTargets = ["Numbers"]
 
 [leanOptions]
@@ -16,4 +14,3 @@ rev = "v4.31.0"
 
 [[lean_lib]]
 name = "Numbers"
-z
