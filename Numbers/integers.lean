@@ -95,9 +95,30 @@ instance : LocallyFiniteOrder MyNat :=
 
 lemma eq_or_eq_of_add_mul_eq_add_mul {a b c d : MyNat} (h : a * d + b * c = a * c + b * d) :
     a = b ∨ c = d := by
-  sorry
+  induction a generalizing b with
+  | zero =>
+    simp only [zero_def, zero_mul, zero_add, mul_eq_mul_left_iff] at *
+    tauto
+  | succ e he =>
+    cases b with
+    | zero =>
+      simp only [succ_mul, zero_def, zero_mul, add_zero] at *
+      rw [← one_mul d] at h
+      nth_rewrite 1 [one_mul] at h
+      rw [← one_mul c] at h
+      nth_rewrite 2 [one_mul] at h
+      rw [← right_distrib, ← right_distrib] at h
+      simp at h
+      symm at h
+      right
+      exact h
+    | succ f =>
+      simp only [succ.injEq]
+      grind
+
 
 end MyNat
+
 
 
 /- True Start Here -/
@@ -399,10 +420,29 @@ lemma zero_ne_one : (0 : MyInt) ≠ 1 := by
   simp [Quotient.eq] at h
 
 lemma mul_ne_zero (x y : MyInt) : x ≠ 0 → y ≠ 0 → x * y ≠ 0 := by
-  sorry
+  refine Quot.induction_on₂ x y ?_
+  rintro ⟨a, b⟩ ⟨c, d⟩ h1 h2 h
+  simp only [Quot_eq_Quotient] at *
+  simp only [mul_def, zero_def, Quotient.eq, equiv_def, add_zero] at *
+  simp at h1 h2
+  cases MyNat.eq_or_eq_of_add_mul_eq_add_mul h with
+  | inl hab =>
+    apply h1
+    rw [hab]
+    simp [Quotient.eq]
+  | inr hcd =>
+    apply h2
+    rw [hcd]
+    simp [Quotient.eq]
 
 lemma eq_of_mul_eq_mul_right {x y z : MyInt} (hx : x ≠ 0) (h : y * x = z * x) : y = z := by
-  sorry
+  have : (y - z) * x = 0 := by
+    rw [sub_mul, sub_eq_zero]
+    assumption
+  rw [← sub_eq_zero]
+  by_contra! h
+  apply mul_ne_zero (y - z) x h hx
+  assumption
 
 /-!
 
@@ -440,6 +480,7 @@ lemma i_injective : Function.Injective i := by
   intro a b h
   simp? [i, Quotient.eq] at h
   exact h
+
 
 /-!
 

@@ -36,7 +36,8 @@ lemma zero_nonneg : IsNonneg 0 := by
 
 @[simp]
 lemma one_nonneg : IsNonneg 1 := by
-  sorry
+  use 1, 1
+  simp [one_def]
 
 /-!
 
