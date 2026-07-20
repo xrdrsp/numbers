@@ -194,7 +194,8 @@ def inv (x : MyPrerat) : MyPrerat :=
   if ha : x.1 ≠ 0 then ⟨x.2, x.1, ha⟩ else ⟨0, 1, by simp⟩
 
 -- Teach it to the simplifier
-@[simp] lemma inv_def {a : MyInt} (b : {x : MyInt // x ≠ 0}) (ha : a ≠ 0) :
+@[simp]
+lemma inv_def {a : MyInt} (b : {x : MyInt // x ≠ 0}) (ha : a ≠ 0) :
     inv (a, b) = (b.1, ⟨a, ha⟩) := by
   simp [inv]
   split
