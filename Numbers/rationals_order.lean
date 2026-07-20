@@ -201,17 +201,27 @@ lemma archimedean (x : MyRat) : ∃ (n : MyNat), x ≤ i n := by
   · use 0
     rw [i_zero]
     exact h
-  revert h
-  refine Quot.induction_on x ?_
-  intro ⟨a, b, hb⟩ h
-  simp at *
-  rcases h with ⟨c, d, hc, hd, h⟩
-  simp at h
-  rw [h]
-  obtain ⟨n, hn⟩ := MyInt.archimedean c
-  use n
-  sorry
-
+  · revert h
+    refine Quot.induction_on x ?_
+    intro ⟨a, b, hb⟩ h
+    simp at *
+    rcases h with ⟨c, d, hc, hd, h⟩
+    simp at h
+    obtain ⟨n, hn⟩ := MyInt.archimedean c
+    use n
+    simp only [i]
+    use MyInt.i n - c, 1
+    refine ⟨?_, by norm_num, ?_⟩
+    · -- 0 ≤ MyInt.i n - c from c ≤ MyInt.i n
+      -- hn : c ≤ i n means ∃ k, i n = c + i k
+      -- We need: ∃ k, MyInt.i n - c = 0 + i k, i.e., ∃ k, MyInt.i n - c = i k
+      obtain ⟨k, hk⟩ := hn
+      use k
+      -- i k = MyInt.i n - c
+      have : MyInt.i n = c + MyInt.i k := by simp [hk]
+      linarith
+    · -- Need to show the subtraction gives the right result
+      sorry
 
 end MyRat
 
