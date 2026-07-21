@@ -1,4 +1,6 @@
-*A journey to the world of Numbers* est un cours de l’Université Renmin de Chine, assuré par Riccardo Brasca et Shanwen Wang. Veuillez consulter [le site web du cours](https://riccardobrasca.github.io/Numbers/).
+# 数的世界之旅
+
+*A journey to the world of Numbers* est un cours de l’Université Renmin de Chine qu’assurent Riccardo Brasca et Shanwen Wang. Veuillez consulter [le site web du cours](https://riccardobrasca.github.io/Numbers/).
 
 Voir aussi [le dépôt du cours](https://github.com/riccardobrasca/Numbers).
 
