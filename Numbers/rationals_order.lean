@@ -47,11 +47,21 @@ lemma one_nonneg : IsNonneg 1 := by
 
 lemma nonneg_neg {x : MyRat} (h : IsNonneg x) (h' : IsNonneg (-x)) :
     x = 0 := by
-  sorry
+  rcases h with ⟨a, b, ha, hb, h1⟩
+  rcases h' with ⟨c, d, hc, hd, h2⟩
+  rw [h1, neg_def, Quotient.eq] at h2
+  simp at h2
+  have h0 : a = 0 := by
+    nlinarith
+  rw [h0] at h1
+  rw [h1, zero_def, Quotient.eq]
+  simp
 
 -- this one is also useful
 lemma nonneg_neg_of_not_nonneg {x : MyRat} : ¬ IsNonneg x → IsNonneg (-x) := by
+  refine Quot.induction_on x ?_
   sorry
+
 
 /-!
 
